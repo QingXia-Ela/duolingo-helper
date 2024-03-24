@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         多邻国一键查看当前题目答案
 // @namespace    http://tampermonkey.net/
-// @version      0.0.1
+// @version      0.0.2
 // @author       https://github.com/QingXia-Ela
 // @match        https://www.duolingo.cn/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=duolingo.cn
@@ -98,7 +98,7 @@
 
     div.addEventListener("click", () => {
       store = document.querySelector("#root")._reactRootContainer.current.memoizedState.element.props.store
-      if (window.location.pathname !== "/lesson") {
+      if (!window.location.pathname.startsWith("/lesson")) {
         alert("非做题页面！")
         return
       }
