@@ -80,6 +80,11 @@
         chooseTranslateKey(currentChallenge)
         break;
 
+      // 5选5
+      case "characterMatch":
+        // todo!
+        break
+
 
       default:
         clickCurrentPageCorrectAnswer(currentChallenge)

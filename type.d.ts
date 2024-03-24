@@ -1,4 +1,10 @@
-export interface DuolingoReduxState {
+// To parse this data:
+//
+//   import { Convert, Welcome } from "./file";
+//
+//   const welcome = Convert.toWelcome(json);
+
+export interface Welcome {
   achievementsV3: AchievementsV3;
   brb: { [key: string]: Brb };
   browserSettings: BrowserSettings;
@@ -18,7 +24,7 @@ export interface DuolingoReduxState {
   uiPersisted: UIPersisted;
   user: WelcomeUser;
   heartsState: HeartsState;
-  animations: Animation[];
+  animations: any[];
   avatars: Avatars;
   debug: Debug;
   player: Player;
@@ -44,13 +50,6 @@ export interface Achievement {
 }
 
 export interface CharacterStateClass {
-}
-
-export interface Animation {
-  blocksHomeMessages: boolean;
-  levelId: string;
-  name: string;
-  id: string;
 }
 
 export interface Avatars {
@@ -328,12 +327,13 @@ export interface CoursesDUOLINGOENZHCN {
   learningLanguage: string;
   xp: number;
   healthEnabled: boolean;
-  fromLanguage: Language;
+  fromLanguage: FromLanguage;
   id: string;
   crowns: number;
 }
 
-export enum Language {
+export enum FromLanguage {
+  Ja = "ja",
   Zh = "zh",
 }
 
@@ -355,7 +355,7 @@ export interface CoursesDUOLINGOJAZHCN {
   path: any[];
   numberOfSentences: number;
   id: string;
-  fromLanguage: Language;
+  fromLanguage: FromLanguage;
   wordsLearned: number;
   fluency: null;
   authorId: string;
@@ -366,19 +366,15 @@ export interface CoursesDUOLINGOJAZHCN {
   sideQuestProgress: CharacterStateClass;
   inLessonAvatars: any[];
   placementTestAvailable: boolean;
-  learningLanguage: LearningLanguage;
+  learningLanguage: FromLanguage;
   crowns: number;
   extraCrowns: number;
   xp: number;
-  topic: LearningLanguage;
+  topic: FromLanguage;
   healthEnabled: boolean;
   pathExperiments: any[];
   checkpointTests: any[];
   status: string;
-}
-
-export enum LearningLanguage {
-  Ja = "ja",
 }
 
 export interface PathDetails {
@@ -528,7 +524,7 @@ export interface DUOLINGOJAZHCNSection {
 
 export interface DUOLINGOJAZHCNTrackingProperties {
   direction: string;
-  learning_language: LearningLanguage;
+  learning_language: FromLanguage;
   ui_language: Locale;
   max_cefr_level: null;
   max_tree_level: number;
@@ -536,7 +532,7 @@ export interface DUOLINGOJAZHCNTrackingProperties {
   skill_tree_id: TreeID;
   took_placementtest: boolean;
   course_subject: string;
-  course_topic_id: LearningLanguage;
+  course_topic_id: FromLanguage;
   course_id: string;
   path_position_active_node_index: number;
   path_position_active_unit_index: number;
@@ -546,6 +542,7 @@ export interface DUOLINGOJAZHCNTrackingProperties {
 }
 
 export enum Locale {
+  Ja = "ja",
   Zs = "zs",
 }
 
@@ -705,7 +702,7 @@ export interface FriendsQuest {
 
 export interface MonthlyQuestTheme {
   themeId: string;
-  template: Template;
+  template: TemplateEnum;
   version: number;
   lightModeColors: ModeColors;
   darkModeColors: ModeColors;
@@ -752,7 +749,7 @@ export interface ProgressBar {
   basic: CharacterStateClass;
 }
 
-export enum Template {
+export enum TemplateEnum {
   DailyQuests = "DAILY_QUESTS",
   FriendsQuests = "FRIENDS_QUESTS",
   MonthlyChallenges = "MONTHLY_CHALLENGES",
@@ -778,7 +775,7 @@ export interface Option {
 
 export interface Schema {
   goalId: string;
-  category: Template;
+  category: TemplateEnum;
   version: number;
   metric: string;
   threshold: number;
@@ -853,8 +850,9 @@ export interface HeartsState {
   overrideShowHeartsIntro: boolean;
   secondsPerHeartSegment: number;
   unlimitedHeartsAvailable: boolean;
-  secondsUntilNextHeartSegment: null;
+  secondsUntilNextHeartSegment: number;
   useHealth: boolean;
+  nextHeartRefillTimestampMs: number;
 }
 
 export interface Items {
@@ -865,6 +863,8 @@ export interface Items {
 
 export interface Inventory {
   streak_freeze: StreakFreeze;
+  xp_boost_15: StreakFreeze;
+  xp_boost_stackable: StreakFreeze;
 }
 
 export interface StreakFreeze {
@@ -872,7 +872,7 @@ export interface StreakFreeze {
   purchaseDate: number;
   purchasePrice: number;
   itemName: string;
-  quantity: number;
+  quantity?: number;
 }
 
 export interface Shop {
@@ -1061,7 +1061,7 @@ export interface Player {
   enableBonusPoints: boolean;
   endedEarly: boolean;
   heartsType: string;
-  inLessonTipResources: InLessonTipResources;
+  inLessonTipResources: CharacterStateClass;
   inLessonTipShowing: boolean;
   isFinalLevel: boolean;
   key: number;
@@ -1071,7 +1071,7 @@ export interface Player {
   numInLessonTipOpens: number;
   numTimesTransliterationToggled: number;
   receivedGifts: ReceivedGifts;
-  recycledMistakeIndexToOriginalMistakeIndex: CharacterStateClass;
+  recycledMistakeIndexToOriginalMistakeIndex: RecycledMistakeIndexToOriginalMistakeIndex;
   session: Session;
   sessionParams: PlayerSessionParams;
   sessionRouteParams: SessionRouteParams;
@@ -1088,8 +1088,19 @@ export interface Player {
 }
 
 export interface ChallengeState {
-  type: string;
-  guess?: number;
+  type: ChallengeStateType;
+  guess?: any[] | GuessClass | number;
+}
+
+export interface GuessClass {
+  tapTranslations: number[];
+}
+
+export enum ChallengeStateType {
+  CharacterMatch = "characterMatch",
+  CharacterSelect = "characterSelect",
+  ListenTap = "listenTap",
+  Translate = "translate",
 }
 
 export interface CoachDuo {
@@ -1097,129 +1108,38 @@ export interface CoachDuo {
   allShowReasons: string[];
   currentCorrectStreak: number;
   currentIncorrectStreak: number;
+  model: Model;
 }
 
-export interface InLessonTipResources { }
-
-export interface HTTPSD1Btvuu4Dwu627CloudfrontNetDd7B1D897391354C54F8247569824F14C3A471C702Bf20982B17D4E1846A5975Web53JSON {
-  elements: HTTPSD1Btvuu4Dwu627CloudfrontNetDd7B1D897391354C54F8247569824F14C3A471C702Bf20982B17D4E1846A5975Web53JSONElement[];
-  intro: null;
-  resourcesToPrefetch: ResourcesToPrefetch[];
-  skillID: string;
-  title: string;
+export interface Model {
+  showReason: string;
+  template: TemplateClass;
 }
 
-export interface HTTPSD1Btvuu4Dwu627CloudfrontNetDd7B1D897391354C54F8247569824F14C3A471C702Bf20982B17D4E1846A5975Web53JSONElement {
-  element: ElementElementClass | number;
-  meta: Meta;
-  type: ElementType;
+export interface TemplateClass {
+  animation: Animation;
+  character: string;
+  message: string;
+  type: string;
 }
 
-export interface ElementElementClass {
-  hints?: Hints;
-  styledString?: StyledString;
-  tokenTTS?: TokenTTS;
-  cells?: Array<Subtext[]>;
-  hasShadedHeader?: boolean;
-  subtext?: Subtext;
-  text?: Subtext;
-  ttsURL?: string;
-  examples?: Example[];
-  image?: Guidebook;
-  layout?: string;
-}
-
-export interface Subtext {
-  hints: Hints;
-  styledString: StyledString;
-  tokenTTS: TokenTTS;
-}
-
-export interface Hints {
-  hintLinks: HintLink[];
-  hints: string[];
-}
-
-export interface HintLink {
-  index: number;
-  rangeEnd: number;
-  rangeStart: number;
-}
-
-export interface StyledString {
-  styling: Styling[];
-  text: string;
-}
-
-export interface Styling {
-  attributes: Attributes;
-  from: number;
-  to: number;
-}
-
-export interface Attributes {
-  alignment: Alignment;
-  fontSize: number;
-  fontWeight: FontWeight;
-  lineSpacing: number;
-  textColor: string;
-}
-
-export enum Alignment {
-  Center = "center",
-  Left = "left",
-}
-
-export enum FontWeight {
-  Bold = "bold",
-  Normal = "normal",
-}
-
-export interface TokenTTS {
-  tokenTTSCollection: TokenTTSCollection[];
-}
-
-export interface TokenTTSCollection {
-  endIndex: number;
-  startIndex: number;
-  ttsURL: string;
-}
-
-export interface Example {
-  subtext: Subtext;
-  text: Subtext;
-  ttsURL: string;
-}
-
-export interface Meta {
-  autoPlayableTTS: any[];
-  backgroundColor: null;
-  sectionIndex: number;
-}
-
-export enum ElementType {
-  Example = "example",
-  ExampleCaptionedImage = "exampleCaptionedImage",
-  Table = "table",
-  Text = "text",
-  VerticalSpace = "verticalSpace",
-}
-
-export interface ResourcesToPrefetch {
-  required: boolean;
-  type: ResourcesToPrefetchType;
+export interface Animation {
+  animation: number;
+  animationInputName: string;
+  artBoardName: string;
+  endedStateName: string;
+  playInputName: string;
+  stateMachineName: string;
+  subscription: number;
+  subscriptionInputName: string;
+  type: string;
   url: string;
 }
 
-export enum ResourcesToPrefetchType {
-  Mp3 = "mp3",
-  SVG = "svg",
-}
-
 export interface LevelData {
-  level: LevelDataLevel;
   levelIndex: number;
   unitIndex: number;
+  level: LevelDataLevel;
   unitNumber: number;
 }
 
@@ -1257,27 +1177,30 @@ export interface ReceivedGifts {
   streakFreeze: boolean;
 }
 
+export interface RecycledMistakeIndexToOriginalMistakeIndex {
+  "18": number;
+}
+
 export interface Session {
   id: string;
-  learningLanguage: LearningLanguage;
-  fromLanguage: Language;
+  learningLanguage: FromLanguage;
+  fromLanguage: FromLanguage;
   type: string;
-  challenges: Challenge[];
+  challenges: SessionChallenge[];
   mistakesReplacementChallenges: any[];
   adaptiveInterleavedChallenges: AdaptiveInterleavedChallenges;
   metadata: SessionMetadata;
   ttsAnnotations: { [key: string]: TTSAnnotation };
   trackingProperties: SessionTrackingProperties;
-  beginner: boolean;
-  skillId: string;
   sessionStartExperiments: any[];
-  levelIndex: number;
+  levelSessionIndex: number;
   challengeTimeTakenCutoff: number;
   explanations: CharacterStateClass;
   progressUpdates: any[];
   isV2: boolean;
   pathExperiments: any[];
   showBestTranslationInGradingRibbon: boolean;
+  sessionContext: SessionContext;
   sessionExperimentRecord: any[];
   experiments_with_treatment_contexts: CharacterStateClass;
   heartsLeft: number;
@@ -1285,45 +1208,37 @@ export interface Session {
 }
 
 export interface AdaptiveInterleavedChallenges {
-  challenges: any[];
-  speakOrListenReplacementIndices: null[];
+  challenges: AdaptiveInterleavedChallengesChallenge[];
+  speakOrListenReplacementIndices: Array<number | null>;
 }
 
-export interface Challenge {
-  prompt?: string;
-  choices: Array<ChoiceChoice | string>;
-  choiceTransliterations?: PromptTransliterationElement[];
-  correctIndex?: number;
-  tts?: string;
-  type: string;
-  id: string;
-  challengeResponseTrackingProperties: ChallengeResponseTrackingProperties;
-  metadata: ChallengeMetadata;
-  progressUpdates: any[];
-  challengeGeneratorIdentifier: ChallengeGeneratorIdentifier;
-  startTime?: number;
-  skipped?: boolean;
-  timeTaken?: number;
-  gradingResult?: GradingResult;
-  indicatorType?: string;
-  promptTransliteration?: PromptTransliterationElement;
+export interface AdaptiveInterleavedChallengesChallenge {
+  prompt: string;
+  promptTransliteration: PromptTransliterationElement;
   correctSolutions?: string[];
   compactTranslations?: string[];
   correctTokens?: string[];
   wrongTokens?: string[];
+  choices: Choice[];
   correctIndices?: number[];
-  sourceLanguage?: LearningLanguage;
-  targetLanguage?: Language;
+  sourceLanguage?: FromLanguage;
+  targetLanguage?: FromLanguage;
   grader?: Grader;
   taggedKcIds?: TaggedKcID[];
   weakWordPromptRanges?: any[];
   tokens?: ChallengeToken[];
+  tts?: string;
   character?: Character;
   isSpeakerUniversal?: boolean;
+  type: ChallengeStateType;
+  id: string;
+  challengeResponseTrackingProperties: PurpleChallengeResponseTrackingProperties;
+  metadata: PurpleMetadata;
   newWords?: any[];
+  progressUpdates: any[];
   sentenceId?: string;
-  solutionTranslation?: string;
-  slowTts?: string;
+  challengeGeneratorIdentifier: ChallengeGeneratorIdentifier;
+  correctIndex?: number;
 }
 
 export interface ChallengeGeneratorIdentifier {
@@ -1331,37 +1246,21 @@ export interface ChallengeGeneratorIdentifier {
   generatorId: string;
 }
 
-export interface ChallengeResponseTrackingProperties {
-  level_session_index: number;
-  birdbrain_target: number;
-  cefr_subsection: string;
-  is_v2: boolean;
+export interface PurpleChallengeResponseTrackingProperties {
   path_uses_unit_vision: boolean;
-  cefr_level: CefrLevel;
-  is_adaptive: boolean;
-  birdbrain_source: BirdbrainSource;
-  generation_timestamp: number;
-  session_type: SessionTypeEnum;
-  birdbrain_probability: number;
-  content_length: number;
-  tagged_kc_ids: string[];
+  level_session_index: number;
+  grading_graph_size?: number;
   num_tap_distractors?: number;
   highlighted_l1_weak_word_in_prompt?: boolean;
-  grading_graph_size?: number;
   num_correct_answer_tokens?: number;
-  best_solution?: string;
-}
-
-export enum BirdbrainSource {
-  BirdbrainV2 = "birdbrain_v2",
-}
-
-export enum CefrLevel {
-  CefrUnknown = "CEFR_UNKNOWN",
+  generation_timestamp: number;
+  session_type: SessionTypeEnum;
+  is_v2: boolean;
+  tagged_kc_ids: string[];
 }
 
 export enum SessionTypeEnum {
-  LevelReview = "level_review",
+  LexemeSkillLevelPractice = "lexeme_skill_level_practice",
 }
 
 export interface Character {
@@ -1377,13 +1276,44 @@ export interface Character {
 }
 
 export interface RiveAnimation {
-  artBoardName: string;
-  correctStateName: string;
-  incorrectStateName: string;
-  notSetStateName: string;
-  outfitInputName: string;
-  stateMachineName: string;
+  artBoardName: ArtBoardName;
+  correctStateName: CorrectStateName;
+  incorrectStateName: IncorrectStateName;
+  notSetStateName: NotSetStateName;
+  outfitInputName: OutfitInputName;
+  stateMachineName: StateMachineName;
   url: string;
+}
+
+export enum ArtBoardName {
+  Character = "Character",
+}
+
+export enum CorrectStateName {
+  Correct = "Correct",
+}
+
+export enum IncorrectStateName {
+  Incorrect = "Incorrect",
+}
+
+export enum NotSetStateName {
+  Reset = "Reset",
+}
+
+export enum OutfitInputName {
+  Outfit = "Outfit",
+}
+
+export enum StateMachineName {
+  InLesson = "InLesson",
+}
+
+export interface Choice {
+  text?: string;
+  character?: string;
+  tts?: string;
+  textTransliteration?: PromptTransliterationElement;
 }
 
 export interface PromptTransliterationElement {
@@ -1400,16 +1330,10 @@ export interface Transliteration {
   type: TransliterationsSettingType;
 }
 
-export interface ChoiceChoice {
-  text: string;
-  tts?: string;
-  textTransliteration?: PromptTransliterationElement;
-}
-
 export interface Grader {
   version: number;
   vertices: Array<Vertex[]>;
-  language: string;
+  language: FromLanguage;
   whitespaceDelimited: boolean;
 }
 
@@ -1419,70 +1343,46 @@ export interface Vertex {
   orig?: string;
 }
 
-export interface GradingResult {
-  correct: boolean;
-  guess: string;
-}
-
-export interface ChallengeMetadata {
-  challenge_construction_insights: ChallengeConstructionInsights;
-  correct_option_index?: number;
-  option_transliterations?: SentenceTransliterationElement[];
-  solution_key: string;
-  source_language: LearningLanguage;
-  text?: string;
-  tts?: string;
-  learning_language: LearningLanguage;
-  specific_type: string;
-  lexeme_ids_to_update: string[];
-  type: string;
-  lexemes_to_update: string[];
-  generic_lexeme_map: CharacterStateClass;
-  from_language: Locale;
-  choices?: MetadataChoice[];
-  correct_index?: number;
-  indicator_type?: IndicatorType;
+export interface PurpleMetadata {
+  challenge_construction_insights: PurpleChallengeConstructionInsights;
   highlight?: any[];
   sentence?: string;
-  sentence_transliteration?: SentenceTransliterationElement;
+  sentence_transliteration?: SentenceTransliterationClass;
+  solution_key: string;
+  source_language: FromLanguage;
   target_language?: Locale;
   tokens?: string[];
   translation?: string;
   weak_word_prompt_ranges?: any[];
   wrong_tokens?: string[];
   teaching_kc_ids?: TeachingKcID[];
+  text?: string;
+  specific_type: string;
+  lexeme_ids_to_update: string[];
+  type: PurpleType;
+  lexemes_to_update: string[];
+  generic_lexeme_map: CharacterStateClass;
   num_comments?: number;
-  language?: LearningLanguage;
-  solution_translation?: string;
-  text_transliteration?: SentenceTransliterationElement;
-  token_transliterations?: SentenceTransliterationElement[];
-  wrong_token_transliterations?: SentenceTransliterationElement[];
+  learning_language: FromLanguage;
+  from_language: Locale;
+  correct_option_index?: number;
+  options_with_tts?: OptionsWithTt[];
+  transliteration?: string;
+  transliteration_transliteration?: SentenceTransliterationClass;
 }
 
-export interface ChallengeConstructionInsights {
-  birdbrain_probability: number;
-  birdbrain_target: number;
-  birdbrain_source: BirdbrainSource;
-  content_length: number;
-  is_adaptive: boolean;
-  cefr_level: CefrLevel;
-  cefr_subsection: string;
+export interface PurpleChallengeConstructionInsights {
   num_tap_distractors?: number;
   num_correct_answer_tokens?: number;
   highlighted_l1_weak_word_in_prompt?: boolean;
-  best_solution?: string;
 }
 
-export interface MetadataChoice {
+export interface OptionsWithTt {
   text: string;
   tts: string;
 }
 
-export interface IndicatorType {
-  name: string;
-}
-
-export interface SentenceTransliterationElement {
+export interface SentenceTransliterationClass {
   tokens: SentenceTransliterationToken[];
 }
 
@@ -1498,6 +1398,13 @@ export interface TeachingKcID {
 
 export enum KcTypeStr {
   Lex = "lex",
+}
+
+export enum PurpleType {
+  CharacterMatch = "character_match",
+  CharacterSelect = "character_select",
+  ListenTap = "listen_tap",
+  Translate = "translate",
 }
 
 export interface TaggedKcID {
@@ -1522,20 +1429,157 @@ export interface Row {
   hintTransliteration?: PromptTransliterationElement;
 }
 
+export interface SessionChallenge {
+  prompt?: string;
+  promptTransliteration?: PromptTransliterationElement;
+  correctSolutions?: string[];
+  compactTranslations?: string[];
+  correctTokens?: string[];
+  wrongTokens?: string[];
+  choices?: Choice[];
+  correctIndices?: number[];
+  sourceLanguage?: FromLanguage;
+  targetLanguage?: FromLanguage;
+  grader?: Grader;
+  taggedKcIds?: TaggedKcID[];
+  weakWordPromptRanges?: any[];
+  tokens?: ChallengeToken[];
+  tts?: string;
+  character?: Character;
+  isSpeakerUniversal?: boolean;
+  type: ChallengeStateType;
+  id: string;
+  challengeResponseTrackingProperties: FluffyChallengeResponseTrackingProperties;
+  metadata: FluffyMetadata;
+  newWords?: any[];
+  progressUpdates: any[];
+  sentenceId?: string;
+  challengeGeneratorIdentifier: ChallengeGeneratorIdentifier;
+  worldCharacterShown?: boolean;
+  startTime?: number;
+  skipped?: boolean;
+  timeTaken?: number;
+  gradingResult?: GradingResult;
+  correctIndex?: number;
+  correctSolutionTransliterations?: PromptTransliterationElement[];
+  solutionTts?: string;
+  solutionTranslation?: string;
+  slowTts?: string;
+  pairs?: ChallengePair[];
+  indicatorType?: string;
+}
+
+export interface FluffyChallengeResponseTrackingProperties {
+  level_session_index: number;
+  birdbrain_target?: number;
+  cefr_subsection?: string;
+  num_tap_distractors?: number;
+  highlighted_l1_weak_word_in_prompt?: boolean;
+  is_v2: boolean;
+  path_uses_unit_vision: boolean;
+  cefr_level?: CefrLevel;
+  is_adaptive?: boolean;
+  grading_graph_size?: number;
+  birdbrain_source?: BirdbrainSource;
+  num_correct_answer_tokens?: number;
+  generation_timestamp: number;
+  session_type: SessionTypeEnum;
+  birdbrain_probability?: number;
+  content_length?: number;
+  tagged_kc_ids: string[];
+  best_solution?: string;
+}
+
+export enum BirdbrainSource {
+  BirdbrainV2 = "birdbrain_v2",
+}
+
+export enum CefrLevel {
+  CefrUnknown = "CEFR_UNKNOWN",
+}
+
+export interface GradingResult {
+  correct: boolean;
+  guess?: any[] | string;
+  blameMessage?: string;
+  blameSubtext?: string;
+}
+
+export interface FluffyMetadata {
+  challenge_construction_insights: FluffyChallengeConstructionInsights;
+  highlight?: any[];
+  sentence?: string;
+  sentence_transliteration?: SentenceTransliterationClass;
+  solution_key: string;
+  source_language: Locale;
+  target_language?: Locale;
+  tokens?: string[];
+  translation?: string;
+  weak_word_prompt_ranges?: any[];
+  wrong_tokens?: string[];
+  teaching_kc_ids?: TeachingKcID[];
+  text?: string;
+  specific_type: string;
+  lexeme_ids_to_update: string[];
+  type: PurpleType;
+  lexemes_to_update: string[];
+  generic_lexeme_map: CharacterStateClass;
+  num_comments?: number;
+  learning_language: FromLanguage;
+  from_language: Locale;
+  correct_option_index?: number;
+  options_with_tts?: OptionsWithTt[];
+  transliteration?: string;
+  transliteration_transliteration?: SentenceTransliterationClass;
+  token_transliterations?: SentenceTransliterationClass[];
+  translation_transliteration?: SentenceTransliterationClass;
+  wrong_token_transliterations?: SentenceTransliterationClass[];
+  language?: FromLanguage;
+  solution_translation?: string;
+  text_transliteration?: SentenceTransliterationClass;
+  pairs?: MetadataPair[];
+}
+
+export interface FluffyChallengeConstructionInsights {
+  birdbrain_probability?: number;
+  birdbrain_target?: number;
+  birdbrain_source?: BirdbrainSource;
+  num_tap_distractors?: number;
+  content_length?: number;
+  num_correct_answer_tokens?: number;
+  is_adaptive?: boolean;
+  cefr_level?: CefrLevel;
+  cefr_subsection?: string;
+  highlighted_l1_weak_word_in_prompt?: boolean;
+  best_solution?: string;
+}
+
+export interface MetadataPair {
+  transliteration: string;
+  transliteration_transliteration?: SentenceTransliterationClass;
+  learning_character: string;
+  tts: string;
+}
+
+export interface ChallengePair {
+  transliteration: string;
+  tokenTransliteration?: PromptTransliterationElement;
+  character: string;
+  tts: string;
+}
+
 export interface SessionMetadata {
   id: string;
   type: SessionTypeEnum;
-  language: LearningLanguage;
+  language: FromLanguage;
   from_language: Locale;
-  skill_id: string;
-  skill_tree_id: TreeID;
-  skill_name: string;
-  beginner: boolean;
-  level_index: number;
   experiments_with_treatment_contexts: CharacterStateClass;
   session_experiment_record: any[];
   session_construction_insights: SessionConstructionInsights;
   show_best_translation_in_grading_ribbon: boolean;
+  session_context: SessionContext;
+  skill_tree_id: TreeID;
+  level_session_index: number;
 }
 
 export interface SessionConstructionInsights {
@@ -1555,14 +1599,16 @@ export interface PickedChallengesInfo {
   challenge_to_intentionally_covered_kcs: CharacterStateClass;
 }
 
+export interface SessionContext {
+  contextType: string;
+}
+
 export interface SessionTrackingProperties {
   percent_target_kc_coverage: number;
-  skill_x_coord: number;
   skill_tree_id: TreeID;
   data_version: string;
   max_repeated_challenge_type_count: number;
   birdbrain_target: number;
-  tree_level: number;
   lexemes_were_reordered: boolean;
   uses_birdbrain_sorting: boolean;
   type: SessionTypeEnum;
@@ -1572,7 +1618,7 @@ export interface SessionTrackingProperties {
   uss_target_kc_strength_scores: any[];
   num_challenges_after_failure_rate_filter: number;
   repeated_undirected_sentences_count: number;
-  learning_language: LearningLanguage;
+  learning_language: FromLanguage;
   num_challenges_gt_tap: number;
   num_challenges_with_challenge_stats: number;
   max_repeated_challenge_type: string;
@@ -1581,42 +1627,46 @@ export interface SessionTrackingProperties {
   max_repeated_sentence_count: number;
   max_repeated_challenge_count: number;
   max_repeated_undirected_sentence_count: number;
-  num_low_quality_challenges: number;
   sentences_count: number;
   num_challenges_gt: number;
   num_sensitive_content_filtered: number;
   distinct_sentences_count: number;
-  num_challenges_gt_character_intro: number;
   num_adaptive_challenges_generated: number;
+  num_challenges_gt_reverse_tap: number;
   num_challenges_gt_listen_tap: number;
   max_repeated_sentence: string;
   uses_birdbrain: boolean;
   birdbrain_probability_median: number;
   read_from_cache: boolean;
+  num_challenges_generated_cefr_level_c2: number;
+  num_challenges_generated_cefr_level_c1: number;
   num_adaptive_challenges_gt: number;
   from_language: Locale;
-  percent_low_quality_challenges: number;
   sum_content_length: number;
   num_challenges_gt_select_pronunciation: number;
   birdbrain_probability_max: number;
-  percent_kc_coverage: number;
   birdbrain_probability_min: number;
   birdbrain_probability_avg: number;
   max_consecutive_challenge_type_count: number;
+  num_challenges_gt_character_match: number;
   expected_length: number;
   offline: boolean;
   activity_uuid: string;
   num_sensitivity_labels_of_user: number;
-  level_index: number;
+  num_challenges_generated_cefr_level_b1: number;
   avg_content_length: number;
+  num_challenges_generated_cefr_level_b2: number;
   uss_target_kc_ids: any[];
+  source_skill_ids: string;
   generation_app_version: string;
   max_consecutive_challenge_type: string;
   max_repeated_undirected_sentence: string;
-  skill_name: string;
   distinct_undirected_sentences_count: number;
-  skill_id: string;
+  num_challenges_generated_cefr_level_a2: number;
   grading_graph_sizes_sum: number;
+  num_challenges_generated_cefr_level_a1: number;
+  num_challenges_generated_cefr_level_intro: number;
+  num_challenges_gt_character_select: number;
 }
 
 export interface TTSAnnotation {
@@ -1625,22 +1675,23 @@ export interface TTSAnnotation {
 
 export interface PlayerSessionParams {
   challengeTypes: string[];
-  fromLanguage: Language;
+  fromLanguage: FromLanguage;
   isFinalLevel: boolean;
   isV2: boolean;
   juicy: boolean;
-  learningLanguage: LearningLanguage;
+  learningLanguage: FromLanguage;
   locale: Locale;
   smartTipsVersion: number;
-  generatorIdentifiersOfRecentMistakes: any[];
   levelIndex: number;
   pathExperiments: any[];
-  skillId: string;
+  skillIds: string[];
   type: string;
   levelSessionIndex: number;
 }
 
 export interface SessionRouteParams {
+  pathUnitNumber: string;
+  pathLevelNumber: string;
   type: string;
   isEarnbackSession: boolean;
 }
@@ -1697,8 +1748,8 @@ export interface Skill {
   skillType: SkillType;
   tipsAndNotes: null;
   urlName: string;
-  fromLanguage: Language;
-  learningLanguage: LearningLanguage;
+  fromLanguage: FromLanguage;
+  learningLanguage: FromLanguage;
   row: number;
 }
 
@@ -1763,7 +1814,6 @@ export interface UI {
   viewportHeight: number;
   viewportWidth: number;
   appOffset: number;
-  shouldReturnToSections: boolean;
 }
 
 export interface UIHomeMessagingClientState {
@@ -1887,7 +1937,7 @@ export interface WelcomeUser {
   emailWeeklyReport: boolean;
   classroomLeaderboardsEnabled: boolean;
   persistentNotifications: string[];
-  fromLanguage: Language;
+  fromLanguage: FromLanguage;
   observedClassroomIds: any[];
   adsConfig: AdsConfig;
   hasGoogleId: boolean;
@@ -1900,7 +1950,7 @@ export interface WelcomeUser {
   currentCourseId: string;
   emailAssignment: boolean;
   monthlyXp: number;
-  learningLanguage: LearningLanguage;
+  learningLanguage: FromLanguage;
   enableSpeaker: boolean;
   username: string;
   courses: string[];
@@ -2078,7 +2128,7 @@ export interface UserTrackingProperties {
   creation_age: number;
   has_item_gold_subscription: boolean;
   creation_date_new: Date;
-  learning_language: LearningLanguage;
+  learning_language: FromLanguage;
   has_item_streak_wager: boolean;
   disable_discussions: boolean;
   beta_enrollment_status: string;
@@ -2101,7 +2151,7 @@ export interface UserTrackingProperties {
   has_item_streak_repair: boolean;
   disable_personalized_ads: boolean;
   utc_offset: number;
-  course_topic_id: LearningLanguage;
+  course_topic_id: FromLanguage;
   has_picture: boolean;
   has_item_live_subscription: boolean;
   is_age_restricted: boolean;
@@ -2159,3 +2209,23 @@ export interface XPSummary {
   numSessions: number | null;
   totalSessionTime: number | null;
 }
+
+// Converts JSON strings to/from your types
+export class Convert {
+  public static toWelcome(json: string): Welcome {
+    return JSON.parse(json);
+  }
+
+  public static welcomeToJson(value: Welcome): string {
+    return JSON.stringify(value);
+  }
+}
+
+/*
+Analysis for personal information
+*/
+
+// Checking for tokens
+// Checking for personal identification information
+// Checking for API keys
+// Checking for passwords
