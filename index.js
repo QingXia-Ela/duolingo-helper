@@ -2,7 +2,7 @@
 // @name         多邻国网页小助手
 // @namespace    http://tampermonkey.net/
 // @description  多邻国一键查看当前题目答案
-// @version      0.0.1
+// @version      0.0.2
 // @author       https://github.com/QingXia-Ela
 // @match        https://www.duolingo.cn/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=duolingo.cn
