@@ -4,7 +4,7 @@
 //
 //   const welcome = Convert.toWelcome(json);
 
-export interface Welcome {
+export interface DuolingoReduxState {
   achievementsV3: AchievementsV3;
   brb: { [key: string]: Brb };
   browserSettings: BrowserSettings;

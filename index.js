@@ -2,7 +2,7 @@
 // @name         多邻国网页小助手
 // @namespace    http://tampermonkey.net/
 // @description  多邻国一键查看当前题目答案
-// @version      0.0.2
+// @version      0.0.3
 // @author       https://github.com/QingXia-Ela
 // @match        https://www.duolingo.cn/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=duolingo.cn
@@ -58,6 +58,13 @@
     document.querySelectorAll("div[data-test='challenge-choice']")[correctIndex].click()
   }
 
+  /**
+   * @param {CurrentChallenge} currentChallenge 
+   */
+  function chooseMatchPair(currentChallenge) {
+    // todo!
+  }
+
   function selectCurrentExercisesAnswer() {
     // player -> challengeStates: Array - 可以获取 challenge 题目类型
     // player -> currentIndex - 第几题了
@@ -82,7 +89,7 @@
 
       // 5选5
       case "characterMatch":
-        // todo!
+        chooseMatchPair(currentChallenge)
         break
 
 
